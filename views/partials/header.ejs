@@ -1,0 +1,15 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      <span class="brand__title"><%= siteName %></span>
+      <span class="brand__tagline">Celebración, música y cultura</span>
+    </a>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a href="/" class="nav-link <%= activePage === 'menu' ? 'is-active' : '' %>">Inicio</a>
+      <a href="/gritos" class="nav-link <%= activePage === 'gritos' ? 'is-active' : '' %>">Ranking de gritos</a>
+      <a href="/loteria" class="nav-link <%= activePage === 'loteria' ? 'is-active' : '' %>">Lotería</a>
+      <a href="/trivia" class="nav-link <%= activePage === 'trivia' ? 'is-active' : '' %>">Trivia</a>
+      <a href="/musica" class="nav-link <%= activePage === 'musica' ? 'is-active' : '' %>">Biblioteca musical</a>
+    </nav>
+  </div>
+</header>

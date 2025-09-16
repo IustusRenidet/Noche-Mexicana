@@ -1,82 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotería Mexicana</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lotería Mexicana | <%= siteName %></title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Signika:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Lotería Mexicana Aleatoria</h1>
-        <p>Genera las cartas de lotería de forma aleatoria sin repetir. Ajusta el delay entre cartas.</p>
-        
-        <label for="delay">Delay (segundos):</label>
-        <input type="number" id="delay" value="2" min="1" max="10" required>
-        <button id="start">Empezar</button>
-        <button id="stop" disabled>Detener</button>
-        
-        <h2>Carta Actual:</h2>
-        <p id="currentCard">-</p>
-        
-        <h3>Cartas Cantadas:</h3>
-        <ul id="calledCards"></ul>
-        
-        <a href="/">Volver al Menú</a>
-    </div>
-    <script>
-        // Pasar las cartas al cliente de forma segura
-        const cards = JSON.parse(decodeURIComponent('<%= encodeURIComponent(JSON.stringify(cards)) %>'));
-        let shuffled = [];
-        let index = 0;
-        let interval = null;
+<body class="page page-loteria">
+  <%- include('partials/header') %>
+  <main class="container content" data-loteria-cards="<%= encodeURIComponent(JSON.stringify(cards)) %>">
+    <section class="page-hero">
+      <h1>Lotería mexicana interactiva</h1>
+      <p>Canta las cartas sin repetir, ajusta el ritmo y lleva el conteo para organizar una partida inolvidable.</p>
+    </section>
 
-        const startButton = document.getElementById('start');
-        const stopButton = document.getElementById('stop');
-        const currentCard = document.getElementById('currentCard');
-        const calledCardsList = document.getElementById('calledCards');
+    <section class="loteria-panel">
+      <div class="loteria-controls">
+        <div class="loteria-control-group">
+          <label for="delay">Intervalo automático (segundos)</label>
+          <input type="number" id="delay" value="2" min="1" max="15" step="1">
+        </div>
+        <div class="loteria-control-group">
+          <label for="modoManual">
+            <input type="checkbox" id="modoManual"> Activar modo manual
+          </label>
+          <p class="help-text">En modo manual tú decides cuándo cantar la siguiente carta.</p>
+        </div>
+        <div class="loteria-buttons">
+          <button id="start" class="button button--primary">Comenzar</button>
+          <button id="next" class="button button--secondary" disabled>Siguiente carta</button>
+          <button id="stop" class="button button--ghost" disabled>Detener</button>
+          <button id="reset" class="button button--ghost" disabled>Reiniciar</button>
+        </div>
+      </div>
 
-        startButton.addEventListener('click', () => {
-            // Reiniciar si ya se terminó
-            if (index >= cards.length) {
-                index = 0;
-                calledCardsList.innerHTML = '';
-                currentCard.textContent = '-';
-            }
-            // Barajar cartas
-            shuffled = [...cards].sort(() => Math.random() - 0.5);
-            const delay = parseInt(document.getElementById('delay').value) * 1000;
-            if (isNaN(delay) || delay < 1000) {
-                alert('Por favor, ingresa un delay válido (mínimo 1 segundo).');
-                return;
-            }
-            interval = setInterval(showNextCard, delay);
-            startButton.disabled = true;
-            stopButton.disabled = false;
-        });
+      <div class="loteria-current">
+        <h2>Carta actual</h2>
+        <div class="loteria-current__card" id="currentCard" aria-live="polite">-</div>
+        <div class="loteria-progress">
+          <div class="progress">
+            <div class="progress__bar" id="loteriaProgress" style="width: 0%"></div>
+          </div>
+          <p><span id="calledCount">0</span> de <span id="totalCount"><%= cards.length %></span> cartas cantadas</p>
+        </div>
+      </div>
 
-        stopButton.addEventListener('click', () => {
-            clearInterval(interval);
-            interval = null;
-            startButton.disabled = false;
-            stopButton.disabled = true;
-        });
+      <aside class="loteria-history" aria-live="polite">
+        <h2>Cartas cantadas</h2>
+        <ol id="calledCards" class="loteria-history__list"></ol>
+      </aside>
+    </section>
 
-        function showNextCard() {
-            if (index < shuffled.length) {
-                currentCard.textContent = shuffled[index];
-                const li = document.createElement('li');
-                li.textContent = shuffled[index];
-                calledCardsList.appendChild(li);
-                index++;
-            } else {
-                clearInterval(interval);
-                interval = null;
-                startButton.disabled = false;
-                stopButton.disabled = true;
-                currentCard.textContent = '¡Se acabaron las cartas!';
-            }
-        }
-    </script>
+    <section class="loteria-tips">
+      <h2>Consejos para tu partida</h2>
+      <ul class="tips-list">
+        <li>Descarga las tablas clásicas o crea nuevas combinaciones e imprime para cada participante.</li>
+        <li>Premia la primera línea, cuadro lleno o forma creativa que acuerden antes de empezar.</li>
+        <li>Acompaña la dinámica con música tradicional desde la <a href="/musica">biblioteca musical</a> para ambientar la voz del gritón.</li>
+      </ul>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
+  <script src="/loteria.js" defer></script>
 </body>
 </html>
