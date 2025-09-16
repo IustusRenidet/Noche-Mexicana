@@ -1,19 +1,92 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Principal</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio | <%= siteName %></title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Signika:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>¡Viva México! - Aplicación Temática</h1>
-        <ul>
-            <li><a href="/gritos">Ranking de Gritos Mexicanos</a></li>
-            <li><a href="/loteria">Lotería Mexicana Aleatoria</a></li>
-            <li><a href="/trivia">Trivia de Cultura Mexicana (Estilo 100 Mexicanos Dijeron)</a></li>
-        </ul>
-    </div>
+<body class="page page-menu">
+  <%- include('partials/header') %>
+  <main class="container content">
+    <% if (typeof notFound !== 'undefined' && notFound) { %>
+      <section class="notice notice--warning" role="alert">
+        <h2>¡Uy! La página que buscabas se fue de fiesta.</h2>
+        <p>Te damos la bienvenida al menú principal para que sigas explorando la cultura mexicana.</p>
+      </section>
+    <% } %>
+
+    <section class="hero hero--menu">
+      <div class="hero__text">
+        <h1>Vive una noche mexicana completa</h1>
+        <p>Descubre gritos patrios inolvidables, canta con nuestra biblioteca musical, reta a tu familia con trivias y organiza una lotería como en las plazas.</p>
+        <div class="hero__actions">
+          <a class="button button--primary" href="/gritos">Ir al ranking de gritos</a>
+          <a class="button button--secondary" href="/trivia">Jugar trivia</a>
+        </div>
+      </div>
+      <div class="hero__highlight">
+        <h2>Top gritos del momento</h2>
+        <ol class="mini-list">
+          <% topGritos.forEach(function(grito, index) { %>
+            <li>
+              <span class="badge">#<%= index + 1 %></span>
+              <span class="mini-list__title"><%= grito.texto %></span>
+              <span class="mini-list__meta"><%= grito.votos %> votos</span>
+            </li>
+          <% }) %>
+        </ol>
+        <p class="mini-list__footer">¿Tienes un grito épico? Súmalo y deja que la comunidad lo vote.</p>
+      </div>
+    </section>
+
+    <section class="grid grid--features">
+      <article class="feature-card">
+        <h2>Ranking de gritos mexicanos</h2>
+        <p>Propón, vota y descubre los gritos más creativos que se escuchan en todo el país.</p>
+        <a class="button button--ghost" href="/gritos">Ver ranking en vivo</a>
+      </article>
+      <article class="feature-card">
+        <h2>Lotería mexicana dinámica</h2>
+        <p>Cartas aleatorias, ritmo configurable y registro de cartas cantadas para animar cualquier kermés.</p>
+        <a class="button button--ghost" href="/loteria">Cantar lotería</a>
+      </article>
+      <article class="feature-card">
+        <h2>Trivia cultural</h2>
+        <p>Más de <strong><%= totalTriviaQuestions %></strong> preguntas sobre historia, música, gastronomía y tradiciones.</p>
+        <a class="button button--ghost" href="/trivia">Poner a prueba tu conocimiento</a>
+      </article>
+      <article class="feature-card">
+        <h2>Biblioteca musical</h2>
+        <p>Playlists curadas de mariachi, son jarocho, cumbia y rock para ambientar tu noche mexicana.</p>
+        <a class="button button--ghost" href="/musica">Explorar música</a>
+      </article>
+    </section>
+
+    <section class="music-preview">
+      <h2>Notas mexicanas que debes escuchar</h2>
+      <div class="grid grid--music">
+        <% featuredMusic.forEach(function(section) { %>
+          <article class="music-preview__card">
+            <h3><%= section.genre %></h3>
+            <p><%= section.description %></p>
+            <ul class="mini-list mini-list--compact">
+              <% section.tracks.slice(0, 2).forEach(function(track) { %>
+                <li>
+                  <span class="mini-list__title"><%= track.title %></span>
+                  <span class="mini-list__meta"><%= track.artist %></span>
+                </li>
+              <% }) %>
+            </ul>
+            <a class="button button--secondary" href="/musica#<%= section.genre.toLowerCase().replace(/[^a-z0-9]+/g, '-') %>">Ver colección</a>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
 </body>
 </html>

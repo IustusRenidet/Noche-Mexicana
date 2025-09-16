@@ -1,34 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ranking de Gritos Mexicanos</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking de Gritos | <%= siteName %></title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Signika:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>¡El Mejor Grito Mexicano!</h1>
-        
-        <!-- Formulario para agregar un nuevo grito -->
-        <form action="/gritos/agregar" method="POST">
-            <input type="text" name="grito" placeholder="Escribe tu grito mexicano" required>
-            <button type="submit">Agregar Grito</button>
-        </form>
+<body class="page page-gritos">
+  <%- include('partials/header') %>
+  <main class="container content">
+    <section class="page-hero">
+      <h1>Ranking de gritos mexicanos</h1>
+      <p>Comparte tu grito, vota por tus favoritos y descubre la creatividad de todo México.</p>
+    </section>
 
-        <!-- Ranking de gritos -->
-        <h2>Ranking</h2>
-        <ul>
-            <% gritos.forEach(grito => { %>
+    <% if (highlight) { %>
+      <section class="highlight-card" id="destacado">
+        <h2>Grito destacado</h2>
+        <div class="highlight-card__content">
+          <div>
+            <h3 class="highlight-card__title" data-top-grito><%= highlight.texto %></h3>
+            <p class="highlight-card__meta">Aportado por <span data-top-aportado><%= highlight.aportadoPor %></span> · <span data-top-region><%= highlight.region %></span></p>
+            <p class="highlight-card__description" data-top-descripcion><%= highlight.descripcion %></p>
+          </div>
+          <div class="highlight-card__score">
+            <span class="highlight-card__label">Votos</span>
+            <span class="highlight-card__value" data-top-votos><%= highlight.votos %></span>
+          </div>
+        </div>
+        <div class="highlight-card__secondary <%= secondaryHighlights && secondaryHighlights.length ? '' : 'is-hidden' %>" data-secondary-container>
+          <h4>Siguen muy de cerca:</h4>
+          <ul data-secondary-list>
+            <% if (secondaryHighlights && secondaryHighlights.length) { %>
+              <% secondaryHighlights.forEach(function(item, index) { %>
                 <li>
-                    <%= grito.texto %> - Votos: <%= grito.votos %>
-                    <form action="/gritos/votar/<%= grito.id %>" method="POST" style="display:inline;">
-                        <button type="submit">Votar</button>
-                    </form>
+                  <span class="badge">#<%= index + 2 %></span>
+                  <span><%= item.texto %></span>
+                  <span class="mini-list__meta"><%= item.votos %> votos</span>
                 </li>
-            <% }) %>
-        </ul>
-        <a href="/">Volver al Menú</a>
-    </div>
+              <% }) %>
+            <% } %>
+          </ul>
+        </div>
+      </section>
+    <% } %>
+
+    <section class="form-section" aria-labelledby="agregar-grito">
+      <div class="form-section__header">
+        <h2 id="agregar-grito">Aporta un nuevo grito</h2>
+        <p>Describe el contexto, la región o a quién se lo dedicarías para que la comunidad conecte con tu propuesta.</p>
+      </div>
+      <form id="nuevoGritoForm" class="form" action="/gritos/agregar" method="POST">
+        <div class="form__grid">
+          <label class="form__field">
+            <span>Texto del grito</span>
+            <input type="text" name="grito" placeholder="¡Que viva...!" required maxlength="140">
+          </label>
+          <label class="form__field">
+            <span>¿Quién lo comparte?</span>
+            <input type="text" name="aportadoPor" placeholder="Tu nombre o colectivo">
+          </label>
+          <label class="form__field">
+            <span>Región o estado</span>
+            <input type="text" name="region" placeholder="Todo México">
+          </label>
+        </div>
+        <label class="form__field form__field--wide">
+          <span>Describe el momento o el sentimiento</span>
+          <textarea name="descripcion" rows="3" placeholder="Cuéntanos por qué debe ser parte del ranking."></textarea>
+        </label>
+        <button type="submit" class="button button--primary">Agregar al ranking</button>
+        <p class="form__feedback" id="gritoFeedback" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="ranking" id="ranking" aria-labelledby="ranking-titulo">
+      <div class="ranking__header">
+        <div>
+          <h2 id="ranking-titulo">Ranking en vivo</h2>
+          <p>Actualizamos los votos al instante. Participa y vuelve para ver cómo crece tu grito.</p>
+        </div>
+        <p class="ranking__totals">Total de votos registrados: <span data-total-votes><%= totalVotes %></span></p>
+      </div>
+      <ol class="grito-list" data-grito-list>
+        <% gritos.forEach(function(grito, index) { %>
+          <li class="grito-card" data-grito-id="<%= grito.id %>">
+            <div class="grito-card__header">
+              <span class="badge">#<%= index + 1 %></span>
+              <div>
+                <h3><%= grito.texto %></h3>
+                <p class="grito-card__meta">Aportado por <strong><%= grito.aportadoPor %></strong> · <span><%= grito.region %></span></p>
+              </div>
+            </div>
+            <p class="grito-card__description"><%= grito.descripcion %></p>
+            <div class="grito-card__stats">
+              <div class="progress" role="img" aria-label="<%= grito.votos %> votos">
+                <div class="progress__bar" style="width: <%= maxVotes ? Math.round((grito.votos / maxVotes) * 100) : 0 %>%"></div>
+              </div>
+              <span class="grito-card__votes"><span class="grito-card__votes-value"><%= grito.votos %></span> voto<%= grito.votos === 1 ? '' : 's' %></span>
+            </div>
+            <form class="vote-form" action="/gritos/votar/<%= grito.id %>" method="POST">
+              <button type="submit" class="button button--secondary">Dar mi voto</button>
+            </form>
+          </li>
+        <% }) %>
+      </ol>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
+  <script src="/gritos.js" defer></script>
 </body>
 </html>
