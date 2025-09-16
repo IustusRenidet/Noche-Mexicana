@@ -1,42 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trivia de Cultura Mexicana</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia de Cultura Mexicana | <%= siteName %></title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Signika:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Trivia: 100 Mexicanos Dijeron</h1>
-        <h2>Pregunta: <%= question.question %></h2>
-        
-        <% if (guess) { %>
-            <p>Tu respuesta: <%= guess %></p>
-            <p>Puntos obtenidos: <%= points %></p>
-        <% } %>
-        
-        <% if (revealed || points > 0) { %>
-            <h3>Respuestas Top:</h3>
-            <ul>
-                <% question.answers.forEach(ans => { %>
-                    <li><%= ans.text %> - <%= ans.points %> puntos</li>
-                <% }) %>
+<body class="page page-trivia">
+  <%- include('partials/header') %>
+  <main class="container content">
+    <section class="page-hero">
+      <h1>Trivia de cultura mexicana</h1>
+      <p>Demuestra qué tanto sabes sobre gastronomía, música, historia, cine y tradiciones. ¡Ideal para jugar en familia!</p>
+    </section>
+
+    <section class="trivia-panel" data-trivia="<%= encodeURIComponent(JSON.stringify(questions)) %>">
+      <div class="scoreboard" aria-live="polite">
+        <div class="scoreboard__tile">
+          <span class="scoreboard__label">Puntaje actual</span>
+          <span class="scoreboard__value" id="triviaScore">0</span>
+        </div>
+        <div class="scoreboard__tile">
+          <span class="scoreboard__label">Mejor puntaje</span>
+          <span class="scoreboard__value" id="triviaBestScore">0</span>
+        </div>
+        <div class="scoreboard__tile">
+          <span class="scoreboard__label">Racha vigente</span>
+          <span class="scoreboard__value" id="triviaStreak">0</span>
+        </div>
+        <div class="scoreboard__tile">
+          <span class="scoreboard__label">Mejor racha</span>
+          <span class="scoreboard__value" id="triviaBestStreak">0</span>
+        </div>
+        <button type="button" id="resetProgress" class="button button--ghost">Reiniciar progreso</button>
+      </div>
+
+      <article class="trivia-card">
+        <div class="trivia-card__meta">
+          <span class="badge" id="triviaCategory">Categoría</span>
+          <span class="badge badge--outline" id="triviaDifficulty">Nivel</span>
+        </div>
+        <h2 id="triviaQuestion">¿Listo para jugar?</h2>
+        <p id="triviaClue" class="trivia-clue" hidden></p>
+        <p id="triviaFunFact" class="trivia-funfact" hidden></p>
+
+        <form id="triviaGuessForm" class="form form--inline" autocomplete="off">
+          <label class="form__field form__field--wide" for="triviaGuess">
+            <span>Tu respuesta</span>
+            <input type="text" id="triviaGuess" name="guess" placeholder="Escribe aquí" required>
+          </label>
+          <button type="submit" class="button button--primary">Responder</button>
+        </form>
+
+        <div id="triviaFeedback" class="trivia-feedback" role="status" aria-live="polite"></div>
+
+        <ul id="triviaAnswers" class="answer-list" hidden></ul>
+
+        <div class="trivia-actions">
+          <button type="button" id="showHint" class="button button--secondary">Mostrar pista</button>
+          <button type="button" id="revealAnswers" class="button button--ghost">Revelar respuestas</button>
+          <button type="button" id="nextQuestion" class="button button--primary">Siguiente pregunta</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="trivia-catalog">
+      <h2>Explora nuestras categorías</h2>
+      <div class="grid grid--catalog">
+        <% groupedCategories.forEach(function(item) { %>
+          <article class="catalog-card">
+            <h3><%= item.category %></h3>
+            <ul class="mini-list mini-list--compact">
+              <% item.sampleQuestions.forEach(function(question) { %>
+                <li><span class="mini-list__title"><%= question %></span></li>
+              <% }) %>
             </ul>
-        <% } %>
-        
-        <% if (!revealed && points === 0 && guess) { %>
-            <p>¡Intento fallido! Intenta otra respuesta o revela.</p>
-        <% } else if (!guess) { %>
-            <form action="/trivia/guess" method="POST">
-                <input type="hidden" name="questionIndex" value="<%= triviaQuestions.findIndex(q => q.question === question.question) %>">
-                <input type="text" name="guess" placeholder="Tu respuesta" required>
-                <button type="submit">Adivinar</button>
-            </form>
-        <% } %>
-        
-        <a href="/trivia">Nueva Pregunta</a>
-        <a href="/">Volver al Menú</a>
-    </div>
+            <p class="catalog-card__note">¡Hay más preguntas esperándote en el juego!</p>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
+  <script src="/trivia.js" defer></script>
 </body>
 </html>
