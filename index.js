@@ -418,13 +418,21 @@ app.get('/', (req, res) => {
 
 app.get('/gritos', (req, res) => {
   const { ranking, totalVotes, maxVotes } = getRankingMetrics();
+  const rankingWithProgress = ranking.map((grito) => {
+    const progressPercent = maxVotes ? Math.round((grito.votos / maxVotes) * 100) : 0;
+    return {
+      ...grito,
+      progressPercent,
+      progressStyle: `width: ${progressPercent}%;`
+    };
+  });
   res.render('gritos', {
     activePage: 'gritos',
-    gritos: ranking,
+    gritos: rankingWithProgress,
     totalVotes,
     maxVotes,
-    highlight: ranking[0] || null,
-    secondaryHighlights: ranking.slice(1, 3)
+    highlight: rankingWithProgress[0] || null,
+    secondaryHighlights: rankingWithProgress.slice(1, 3)
   });
 });
 
