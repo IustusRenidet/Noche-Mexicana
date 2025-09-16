@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia de Cultura Mexicana</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Trivia: 100 Mexicanos Dijeron</h1>
+        <h2>Pregunta: <%= question.question %></h2>
+        
+        <% if (guess) { %>
+            <p>Tu respuesta: <%= guess %></p>
+            <p>Puntos obtenidos: <%= points %></p>
+        <% } %>
+        
+        <% if (revealed || points > 0) { %>
+            <h3>Respuestas Top:</h3>
+            <ul>
+                <% question.answers.forEach(ans => { %>
+                    <li><%= ans.text %> - <%= ans.points %> puntos</li>
+                <% }) %>
+            </ul>
+        <% } %>
+        
+        <% if (!revealed && points === 0 && guess) { %>
+            <p>¡Intento fallido! Intenta otra respuesta o revela.</p>
+        <% } else if (!guess) { %>
+            <form action="/trivia/guess" method="POST">
+                <input type="hidden" name="questionIndex" value="<%= triviaQuestions.findIndex(q => q.question === question.question) %>">
+                <input type="text" name="guess" placeholder="Tu respuesta" required>
+                <button type="submit">Adivinar</button>
+            </form>
+        <% } %>
+        
+        <a href="/trivia">Nueva Pregunta</a>
+        <a href="/">Volver al Menú</a>
+    </div>
+</body>
+</html>

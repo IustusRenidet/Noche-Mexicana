@@ -1,0 +1,91 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #006400; /* Verde mexicano */
+}
+
+h2 {
+    color: #8B0000; /* Rojo mexicano */
+}
+
+h3 {
+    color: #333;
+}
+
+form {
+    margin: 20px 0;
+}
+
+input[type="text"], input[type="number"] {
+    padding: 10px;
+    width: 60%;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #006400;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #004d00;
+}
+
+button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li button {
+    background-color: #8B0000;
+}
+
+li button:hover {
+    background-color: #6B0000;
+}
+
+a {
+    display: inline-block;
+    margin: 10px;
+    color: #006400;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #004d00;
+}
+
+#calledCards li {
+    justify-content: center;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "mexican-culture-app",
+  "version": "1.0.0",
+  "description": "Aplicación para ranking de gritos, lotería mexicana y trivia cultural",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2"
+  }
+}

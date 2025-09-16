@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotería Mexicana</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Lotería Mexicana Aleatoria</h1>
+        <p>Genera las cartas de lotería de forma aleatoria sin repetir. Ajusta el delay entre cartas.</p>
+        
+        <label for="delay">Delay (segundos):</label>
+        <input type="number" id="delay" value="2" min="1" max="10" required>
+        <button id="start">Empezar</button>
+        <button id="stop" disabled>Detener</button>
+        
+        <h2>Carta Actual:</h2>
+        <p id="currentCard">-</p>
+        
+        <h3>Cartas Cantadas:</h3>
+        <ul id="calledCards"></ul>
+        
+        <a href="/">Volver al Menú</a>
+    </div>
+    <script>
+        // Pasar las cartas al cliente de forma segura
+        const cards = JSON.parse(decodeURIComponent('<%= encodeURIComponent(JSON.stringify(cards)) %>'));
+        let shuffled = [];
+        let index = 0;
+        let interval = null;
+
+        const startButton = document.getElementById('start');
+        const stopButton = document.getElementById('stop');
+        const currentCard = document.getElementById('currentCard');
+        const calledCardsList = document.getElementById('calledCards');
+
+        startButton.addEventListener('click', () => {
+            // Reiniciar si ya se terminó
+            if (index >= cards.length) {
+                index = 0;
+                calledCardsList.innerHTML = '';
+                currentCard.textContent = '-';
+            }
+            // Barajar cartas
+            shuffled = [...cards].sort(() => Math.random() - 0.5);
+            const delay = parseInt(document.getElementById('delay').value) * 1000;
+            if (isNaN(delay) || delay < 1000) {
+                alert('Por favor, ingresa un delay válido (mínimo 1 segundo).');
+                return;
+            }
+            interval = setInterval(showNextCard, delay);
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        });
+
+        stopButton.addEventListener('click', () => {
+            clearInterval(interval);
+            interval = null;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        });
+
+        function showNextCard() {
+            if (index < shuffled.length) {
+                currentCard.textContent = shuffled[index];
+                const li = document.createElement('li');
+                li.textContent = shuffled[index];
+                calledCardsList.appendChild(li);
+                index++;
+            } else {
+                clearInterval(interval);
+                interval = null;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                currentCard.textContent = '¡Se acabaron las cartas!';
+            }
+        }
+    </script>
+</body>
+</html>
